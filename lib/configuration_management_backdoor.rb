@@ -1,0 +1,4 @@
+require 'configuration_management_backdoor/engine'
+
+module ConfigurationManagementBackdoor
+end
