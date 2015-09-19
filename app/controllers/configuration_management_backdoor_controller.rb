@@ -5,6 +5,8 @@ class ConfigurationManagementBackdoorController < ApplicationController
     _username, password = ActionController::HttpAuthentication::Basic \
                           .user_name_and_password(request) rescue [nil, nil]
     unless Rails.application.secrets.secret_key_base == password
+      response.headers['WWW-Authenticate'] =
+        'Basic realm="Configuration Management Backdoor via secret_key_base"'
       render plain: 'unauthorized', status: :unauthorized
     end
   end
