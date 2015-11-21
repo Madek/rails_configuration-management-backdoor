@@ -3,23 +3,32 @@ class ConfigurationManagementBackdoorController < ApplicationController
 
   def authenticate
     _username, password = ActionController::HttpAuthentication::Basic \
-                          .user_name_and_password(request) rescue [nil, nil]
-    unless Rails.application.secrets.secret_key_base == password
-      response.headers['WWW-Authenticate'] =
-        'Basic realm="Configuration Management Backdoor via secret_key_base"'
-      render plain: 'unauthorized', status: :unauthorized
+      .user_name_and_password(request) rescue [nil, nil]
+    if password == nil
+      response.headers['WWW-Authenticate'] = 'Basic realm="Configuration Management Backdoor via secret_key_base"'
+      render plain: 'unauthorized', status: 401
+    elsif Rails.application.secrets.secret_key_base != password
+      render plain: 'Forbidden', status: 403
     end
   end
 
   def invoke_ruby
     code = request.body.read
-    render plain: eval(code)
+    begin
+      render json: {result: eval(code)}
+    rescue Exception => e
+      render json: {error: e.to_s}, status: 422
+    end
   end
 
   def invoke_sql
-    code = request.body.gets
-    res = ActiveRecord::Base.connection.execute code
-    render plain: res.to_a.to_s
+    begin
+      code = request.body.read
+      res = ActiveRecord::Base.connection.execute code
+      render json: {result: res}
+    rescue Exception => e
+      render json: {error: e.to_s}, status: 422
+    end
   end
 
   def invoke
