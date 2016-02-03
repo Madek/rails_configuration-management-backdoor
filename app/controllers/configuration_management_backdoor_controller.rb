@@ -1,4 +1,5 @@
 class ConfigurationManagementBackdoorController < ApplicationController
+  skip_before_action :verify_authenticity_token
   before_action :authenticate
 
   def authenticate
@@ -13,8 +14,8 @@ class ConfigurationManagementBackdoorController < ApplicationController
   end
 
   def invoke_ruby
-    code = request.body.read
     begin
+      code = request.body.read
       render json: {result: eval(code)}
     rescue Exception => e
       render json: {error: e.to_s}, status: 422
