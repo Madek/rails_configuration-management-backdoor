@@ -18,7 +18,7 @@ Gem::Specification.new do |s|
                 'Rakefile', 'README.rdoc']
   s.test_files = Dir['test/**/*']
 
-  s.add_dependency 'rails', '>= 5.0', '< 6.0'
+  s.add_dependency 'rails', '>= 6.0', '< 6.1'
 
   s.add_development_dependency 'rubocop'
 end
