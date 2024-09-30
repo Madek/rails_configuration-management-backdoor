@@ -8,7 +8,7 @@ class ConfigurationManagementBackdoorController < ApplicationController
     if password == nil
       response.headers['WWW-Authenticate'] = 'Basic realm="Configuration Management Backdoor via secret_key_base"'
       render plain: 'unauthorized', status: 401
-    elsif Rails.application.secrets.secret_key_base != password
+    elsif Rails.application.secret_key_base != password
       render plain: 'Forbidden', status: 403
     end
   end
